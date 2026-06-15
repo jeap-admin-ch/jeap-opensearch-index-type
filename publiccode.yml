@@ -1,0 +1,45 @@
+publiccodeYmlVersion: 0.5.0
+name: jeap-opensearch-index-type
+applicationSuite: jEAP
+softwareVersion: 1.0.0
+releaseDate: 2026-06-15
+url: "https://github.com/jeap-admin-ch/jeap-opensearch-index-type.git"
+landingURL: "https://github.com/jeap-admin-ch/jeap"
+platforms:
+  - web
+categories:
+  - application-development
+developmentStatus: stable
+softwareType: library
+organisation:
+  uri: https://ld.admin.ch/office/V.1.7
+  name: Federal Office of Information Technology, Systems and Telecommunication
+description:
+  en:
+    localisedName: jeap-opensearch-index-type
+    shortDescription: Core domain model defining IndexType and SearchItem contracts for jEAP OpenSearch infrastructure
+    longDescription: >
+      jeap-opensearch-index-type defines the core contracts and data structures shared by jEAP OpenSearch index writers,
+      search clients, and the index type registry Maven plugin.
+      It provides the IndexType<T> and IndexTypeDescriptor interfaces that describe versioned OpenSearch indices,
+      carrying origin type, major and minor version, write and read aliases, mapping definitions, typed data classes,
+      and role-based access control declarations.
+      The library also defines SearchItem (the read model), SearchItemIndexed (the write model enriched with
+      SearchItemMetadata), and Origin (business object metadata including id, version, tenant, and timestamps).
+      All types are immutable records with zero infrastructure dependencies — only Jackson for JSON serialization.
+    features:
+      - IndexType<T> and IndexTypeDescriptor interfaces for versioned OpenSearch index descriptions
+      - SearchItem read model and SearchItemIndexed write model
+      - Origin business object metadata record
+      - Zero infrastructure dependencies — pure domain model
+legal:
+  license: Apache-2.0
+maintenance:
+  type: internal
+  contacts:
+    - name: Federal Office of Information Technology, Systems and Telecommunication FOITT
+      email: jeap-community@bit.admin.ch
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
