@@ -37,7 +37,7 @@ public class MyDocumentIndexType implements IndexType<MyDocumentData> {
     @Override public int majorVersion()       { return 1; }
     @Override public int minorVersion()       { return 3; }
     @Override public String indexWriteAlias() { return "my_document_v1_write"; }
-    @Override public String indexReadAlias()  { return "my_document_v1"; }
+    @Override public String indexReadAlias()  { return "my_document_read"; }
     @Override public Class<MyDocumentData> dataClass() { return MyDocumentData.class; }
     @Override public Supplier<InputStream> mappingDefinition() {
         return () -> getClass().getResourceAsStream("/mappings/my_document_v1.json");
