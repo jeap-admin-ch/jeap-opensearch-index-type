@@ -1,5 +1,6 @@
 package ch.admin.bit.jeap.opensearch.indextype;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -80,6 +82,57 @@ class JsonSerializationTest {
         assertThat(deserialized.origin().bpId()).isEqualTo("bp-rt");
         assertThat(deserialized.searchItem().majorVersion()).isEqualTo(1);
         assertThat(deserialized.searchItem().minorVersion()).isZero();
+    }
+
+    /**
+     * Data class in the shape the index type registry generates for a mapping declaring an
+     * {@code object} field and a {@code nested} field. An OpenSearch {@code nested} field holds an
+     * array of objects, so it is generated as a {@code List}; an {@code object} field holds a single
+     * one. {@link SearchItemIndexed} carries this as its generic {@code data}, so both shapes must
+     * survive a round trip through it.
+     */
+    record GeneratedData(
+            @JsonProperty("single_object") SingleObject singleObject,
+            List<Cases> cases
+    ) {
+        record SingleObject(String name) {}
+
+        record Cases(@JsonProperty("case_reference") String caseReference) {}
+    }
+
+    @Test
+    void searchItemIndexedSerializesObjectDataAsSingleObjectAndNestedDataAsArray() {
+        SearchItemMetadata meta = new SearchItemMetadata(Instant.EPOCH, 1, 0);
+        Origin origin = new Origin("id-1", "v1", "bp-1", null, Instant.EPOCH, Instant.EPOCH, null);
+        GeneratedData data = new GeneratedData(
+                new GeneratedData.SingleObject("the-name"),
+                List.of(new GeneratedData.Cases("C-1"), new GeneratedData.Cases("C-2")));
+
+        JsonNode json = mapper.valueToTree(new SearchItemIndexed<>(meta, origin, data));
+
+        assertThat(json.path("data").path("single_object").isObject()).isTrue();
+        assertThat(json.path("data").path("single_object").path("name").asString()).isEqualTo("the-name");
+        assertThat(json.path("data").path("cases").isArray()).isTrue();
+        assertThat(json.path("data").path("cases")).hasSize(2);
+        assertThat(json.path("data").path("cases").get(0).path("case_reference").asString()).isEqualTo("C-1");
+    }
+
+    @Test
+    void searchItemIndexedRoundTripsObjectAndNestedData() {
+        SearchItemMetadata meta = new SearchItemMetadata(Instant.EPOCH, 1, 0);
+        Origin origin = new Origin("id-1", "v1", "bp-1", null, Instant.EPOCH, Instant.EPOCH, null);
+        GeneratedData data = new GeneratedData(
+                new GeneratedData.SingleObject("the-name"),
+                List.of(new GeneratedData.Cases("C-1"), new GeneratedData.Cases("C-2")));
+
+        String json = mapper.writeValueAsString(new SearchItemIndexed<>(meta, origin, data));
+        SearchItemIndexed<GeneratedData> deserialized = mapper.readValue(json,
+                mapper.getTypeFactory().constructParametricType(SearchItemIndexed.class, GeneratedData.class));
+
+        assertThat(deserialized.data().singleObject().name()).isEqualTo("the-name");
+        assertThat(deserialized.data().cases()).hasSize(2);
+        assertThat(deserialized.data().cases().getFirst().caseReference()).isEqualTo("C-1");
+        assertThat(deserialized.data().cases().getLast().caseReference()).isEqualTo("C-2");
     }
 
     @Test
