@@ -1,8 +1,8 @@
 publiccodeYmlVersion: 0.5.0
 name: jeap-opensearch-index-type
 applicationSuite: jEAP
-softwareVersion: 1.35.0
-releaseDate: 2026-09-10
+softwareVersion: 1.36.0
+releaseDate: 2026-09-11
 url: "https://github.com/jeap-admin-ch/jeap-opensearch-index-type.git"
 landingURL: "https://github.com/jeap-admin-ch/jeap"
 platforms:
