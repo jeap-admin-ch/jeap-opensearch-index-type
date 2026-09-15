@@ -42,7 +42,9 @@ public interface IndexTypeDescriptor {
     List<String> roles();
 
     /**
-     * @return the mapping definition for this index type as an input stream. The mapping definition must be a valid OpenSearch mapping definition in JSON format.
+     * @return a supplier of fresh streams containing the native OpenSearch JSON definition:
+     *         required {@code mappings} and optional {@code settings.analysis}. Operational settings
+     *         remain writer-owned. Mapping and analysis are versioned together. The caller closes each stream.
      */
     Supplier<InputStream> mappingDefinition();
 

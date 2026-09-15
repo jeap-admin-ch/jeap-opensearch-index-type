@@ -1,5 +1,19 @@
 # Domain model
 
+## Native index definition
+
+`IndexTypeDescriptor.mappingDefinition()` supplies the complete versioned JSON resource, containing
+required `mappings` and optional native `settings.analysis`. The caller closes the returned stream;
+each supplier invocation must return a fresh stream. Existing mapping-only definitions remain valid.
+
+Analysis can define OpenSearch analyzers, normalizers, tokenizers, token filters, and character filters.
+It shares the mapping's major/minor version. No separate Java analysis API or jEAP analysis language
+is required. Operational settings such as shards, replicas, and refresh intervals belong to the writer.
+
+Use a registry plugin and writer version supporting native analysis before adopting these definitions.
+Analysis-settings changes require a new major and an index migration with the current writer lifecycle;
+compatible new fields may use already-installed analysis within a minor version.
+
 This library provides the core contracts and data structures shared by all components of the jEAP
 OpenSearch ecosystem: the index writer service, the search client starter, the SearchItem API, and
 the index type registry Maven plugin.
